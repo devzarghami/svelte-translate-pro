@@ -30,11 +30,3 @@ jobs:
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          target_branch: gh-pages
-          source_dir: ./dist  # Adjust this path to where your build output is
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
