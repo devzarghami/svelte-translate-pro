@@ -4,6 +4,9 @@
   "author": "Artin Zarghami dev.zarghami@gmail.com",
   "version": "0.0.1",
   "license": "MIT",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "keywords": [
     "i18n",
     "internationalization",
