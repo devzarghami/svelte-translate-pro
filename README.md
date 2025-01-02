@@ -4,6 +4,8 @@
 
 This project provides a flexible internationalization (i18n) solution for Svelte applications, with support for multiple languages and dynamic translation loading. It allows you to load translation files at runtime, switch languages dynamically, and retrieve translations with support for interpolation.
 
+![Svelte Translate Pro](https://raw.githubusercontent.com/devzarghami/svelte-translate-pro/refs/heads/main/svelte-translate-pro.jpg?raw=true)
+
 ## Features
 
 - Support for multiple languages.
