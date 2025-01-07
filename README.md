@@ -42,13 +42,18 @@ console.log(AppLanguages.EN); // "en"
 
 ### 2. Load Translation Files
 
-Use the `importTranslationFile` function to dynamically load a translation file for a given language. The file should export the translation data as the default export.
+Use the `loadTranslationData` function to dynamically load a translation file for a given language. The file should export the translation data as the default export.
 
 ```typescript
-import { importTranslationFile, AppLanguages } from 'svelte-translate-pro';
+import { loadTranslationData, AppLanguages } from 'svelte-translate-pro';
 
-// Load French translations
-await importTranslationFile(AppLanguages.FR, '/translations/fr.json');
+// Load English translations from file
+await loadTranslationData(AppLanguages.FR, '/lib/translations/en.json');
+// Or
+import en from "/lib/translations/en.json"
+
+await loadTranslationData(AppLanguages.EN, en);
+
 ```
 
 #### Translation File Example (`fr.json`)
@@ -62,12 +67,12 @@ await importTranslationFile(AppLanguages.FR, '/translations/fr.json');
 
 ### 3. Get the Current Language
 
-You can retrieve the current language using the `getCurrentLanguage` function.
+You can retrieve the current language using the `getActiveLanguage` function.
 
 ```typescript
-import { getCurrentLanguage } from 'svelte-translate-pro';
+import { getActiveLanguage } from 'svelte-translate-pro';
 
-const currentLang = getCurrentLanguage();
+const currentLang = getActiveLanguage();
 console.log(currentLang); // "en"
 ```
 
@@ -135,13 +140,13 @@ $t$({
 
 ### 6. Language Switching
 
-You can switch the language by calling the `changeLanguage` function, which updates the application's language:
+You can switch the language by calling the `setActiveLanguage` function, which updates the application's language:
 
 ```typescript
-import { changeLanguage, AppLanguages } from 'svelte-translate-pro';
+import { setActiveLanguage, AppLanguages } from 'svelte-translate-pro';
 
-changeLanguage(AppLanguages.FA); // Switches to Persian (FA)
-changeLanguage(AppLanguages.EN); // Switches to English (EN)
+setActiveLanguage(AppLanguages.FA); // Switches to Persian (FA)
+setActiveLanguage(AppLanguages.EN); // Switches to English (EN)
 ```
 
 ### 7. Debugging
@@ -173,20 +178,20 @@ export enum AppLanguages {
 }
 ```
 
-### `importTranslationFile(language: AppLanguage, filePath: string)`
+### `loadTranslationData(language: AppLanguage, filePath: string)`
 
 Dynamically loads a translation file for the specified language and updates the global translations store.
 
 ```typescript
-await importTranslationFile(AppLanguages.FR, '/translations/fr.json');
+await loadTranslationData(AppLanguages.FR, '/translations/fr.json');
 ```
 
-### `getCurrentLanguage(): AppLanguage`
+### `getActiveLanguage(): AppLanguage`
 
 Gets the current language of the application.
 
 ```typescript
-const lang = getCurrentLanguage(); // "en"
+const lang = getActiveLanguage(); // "en"
 ```
 
 ### `setPageSpecificTranslations(data: Record<AppLanguage, TranslationData>)`

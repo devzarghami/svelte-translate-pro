@@ -67,68 +67,59 @@ type TranslationObject = Partial<Record<AppLanguage, string>>;
 /**
  * Store to hold the current application language.
  * It can be updated by the user or automatically through the language loading mechanism.
- *
- * @example
- * ```typescript
- * currentLanguage.set(AppLanguages.FA);
- * ```
  */
-const currentLanguage: Writable<AppLanguage> = writable(DEFAULT_LANGUAGE);
+const activeLanguage: Writable<AppLanguage> = writable(DEFAULT_LANGUAGE);
 
 /**
  * Global translations data store.
  * Holds translations for all languages, including key-value pairs.
- *
- * @example
- * ```typescript
- * globalTranslations.set({
- *   en: { "navbar.title": "Welcome" },
- *   fa: { "navbar.title": "خوش آمدید" }
- * });
- * ```
  */
-const globalTranslations: Writable<Record<AppLanguage, TranslationData>> = writable(<Record<AppLanguage, TranslationData>>{});
+const globalTranslationsStore: Writable<Record<AppLanguage, TranslationData>> = writable(<Record<AppLanguage, TranslationData>>{});
 
 /**
  * Page-specific translations data store.
  * Stores translations specific to the current page.
- *
- * @example
- * ```typescript
- * pageTranslations.set({
- *   en: { "title": "Page Title" },
- *   fa: { "title": "عنوان صفحه" }
- * });
- * ```
  */
-const pageTranslations: Writable<Record<AppLanguage, TranslationData>> = writable(<Record<AppLanguage, TranslationData>>{});
+const pageTranslationsStore: Writable<Record<AppLanguage, TranslationData>> = writable(<Record<AppLanguage, TranslationData>>{});
 
 /**
- * Dynamically imports a translation file and updates the global translations store with the data.
+ * Dynamically imports a local translation file and updates the global translations store with the data.
  * Sets the current language to the language of the loaded translation.
  *
  * @param language - The target language to load (e.g., "en", "fa").
- * @param filePath - The file path to the translation data.
+ * @param filePathOrData
  *
  * @example
  * ```typescript
- * await importTranslationFile(AppLanguages.FA, '/translations/fa.json');
+ * await loadTranslation(AppLanguages.FA, '/lib/translations/fa.json');
+ * Or
+ * import en from "/lib/translations/en.json"
+ * await loadTranslation(AppLanguages.EN, en);
  * ```
  */
-export async function importTranslationFile(language: AppLanguage, filePath: string): Promise<void> {
+export async function loadTranslation(language: AppLanguage, filePathOrData: string | TranslationData): Promise<void> {
     try {
-        const data = await import(filePath);
-        globalTranslations.update((currentData) => ({
-            ...currentData,
-            [language]: data.default || data,
-        }));
-        currentLanguage.set(language);
-
-        if (DEV) {
-            console.log(`Translation file loaded for language: ${language}`);
+        if (typeof filePathOrData === "string") {
+            const data = await import(filePathOrData);
+            globalTranslationsStore.update((currentData: any) => ({
+                ...currentData,
+                [language]: data.default || data,
+            }));
+            if (DEV) console.log(`Translation file loaded for language: ${language}`);
+        } else if (typeof filePathOrData === "object") {
+            globalTranslationsStore.update((currentData: any) => ({
+                ...currentData,
+                [language]: filePathOrData,
+            }));
+            if (DEV) console.log(`Translation data loaded for language: ${language}`);
         }
+        activeLanguage.set(language);
     } catch (error) {
-        console.error(`Failed to load translation file for language "${language}" from "${filePath}":`, error);
+        if (typeof filePathOrData === "string") {
+            console.error(`Failed to load translation file for language "${language}" from "${filePathOrData}":`, error);
+        } else if (typeof filePathOrData === "object") {
+            console.error(`Failed to load translation data for language "${language}" data:${filePathOrData}:`, error);
+        }
     }
 }
 
@@ -140,11 +131,11 @@ export async function importTranslationFile(language: AppLanguage, filePath: str
  *
  * @example
  * ```typescript
- * const currentLang = getCurrentLanguage(); // "en"
+ * const currentLang = getActiveLanguage(); // "en"
  * ```
  */
-export function getCurrentLanguage(): AppLanguage {
-    return get(currentLanguage);
+export function getActiveLanguage(): AppLanguage {
+    return get(activeLanguage);
 }
 
 /**
@@ -157,12 +148,12 @@ export function getCurrentLanguage(): AppLanguage {
  *
  * @example
  * ```typescript
- * changeLanguage(AppLanguages.EN); // Switches to English
- * changeLanguage(AppLanguages.FA); // Switches to Persian
+ * setActiveLanguage(AppLanguages.EN); // Switches to English
+ * setActiveLanguage(AppLanguages.FA); // Switches to Persian
  * ```
  */
-export function changeLanguage(lang: AppLanguage) {
-    currentLanguage.set(lang);
+export function setActiveLanguage(lang: AppLanguage) {
+    activeLanguage.set(lang);
 }
 
 /**
@@ -180,7 +171,7 @@ export function changeLanguage(lang: AppLanguage) {
  * ```
  */
 export function setPageSpecificTranslations(data: Record<AppLanguage, TranslationData>): void {
-    pageTranslations.set(data);
+    pageTranslationsStore.set(data);
 
     if (DEV) {
         console.log("Page-specific translations updated.", data);
@@ -201,7 +192,7 @@ export function setPageSpecificTranslations(data: Record<AppLanguage, Translatio
  *
  * @example
  * ```typescript
- * const translation = getTranslation("navbar.title", {}, "fa", globalTranslations, pageTranslations);
+ * const translation = getTranslation("navbar.title", {}, "fa", globalTranslationsStore, pageTranslationsStore);
  * console.log(translation); // "خوش آمدید"
  * ```
  */
@@ -270,7 +261,7 @@ function getTranslation(
  * ```
  */
 export function reactiveTranslate<T>(translateFn: (t: (key: string) => string) => T[]): Readable<T[]> {
-    return derived(t$, ($t) => translateFn($t));
+    return derived(t$, ($t: (key: string) => string) => translateFn($t));
 }
 
 /**
@@ -285,7 +276,7 @@ export function reactiveTranslate<T>(translateFn: (t: (key: string) => string) =
 export const t$: Readable<
     (key: string | TranslationObject, vars?: Record<string, string | TranslationObject>) => string
 > = derived(
-    [currentLanguage, globalTranslations, pageTranslations],
+    [activeLanguage, globalTranslationsStore, pageTranslationsStore],
     ([$language, $globalData, $pageData]) =>
         (key: string | TranslationObject, vars: Record<string, string | TranslationObject> = {}): string =>
             getTranslation(key, vars, $language, $globalData, $pageData),
