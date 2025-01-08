@@ -48,7 +48,9 @@ const DEFAULT_LANGUAGE: AppLanguage = AppLanguages.EN;
  * };
  * ```
  */
-type TranslationData = Record<string, string>;
+interface TranslationData {
+    [key: string]: string | TranslationData;
+}
 
 /**
  * Type representing a translation object for multiple languages.
