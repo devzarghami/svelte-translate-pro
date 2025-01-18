@@ -172,7 +172,7 @@ export function setActiveLanguage(lang: AppLanguage) {
  * });
  * ```
  */
-export function setPageSpecificTranslations(data: Record<AppLanguage, TranslationData>): void {
+export function setPageSpecificTranslations(data: Record<Partial<AppLanguage>, TranslationData>): void {
     pageTranslationsStore.set(data);
 
     if (DEV) {

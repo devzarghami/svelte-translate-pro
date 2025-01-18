@@ -2,7 +2,7 @@
   "name": "svelte-translate-pro",
   "description": "A powerful and flexible internationalization (i18n) library for dynamic language management, real-time translations, and localization. Supports multiple languages, interpolation, and page-specific translations with an intuitive API.",
   "author": "Artin Zarghami dev.zarghami@gmail.com",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "license": "MIT",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
