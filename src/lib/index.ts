@@ -64,7 +64,7 @@ interface TranslationData {
  * };
  * ```
  */
-type TranslationObject = Partial<Record<AppLanguage, string>>;
+type TranslationObject = Partial<Record<AppLanguage, TranslationData>>;
 
 /**
  * Store to hold the current application language.
@@ -172,7 +172,7 @@ export function setActiveLanguage(lang: AppLanguage) {
  * });
  * ```
  */
-export function setPageSpecificTranslations(data: Record<Partial<AppLanguage>, TranslationData>): void {
+export function setPageSpecificTranslations(data: TranslationObject): void {
     pageTranslationsStore.set(data);
 
     if (DEV) {
