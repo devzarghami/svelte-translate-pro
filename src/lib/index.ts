@@ -64,7 +64,7 @@ interface TranslationData {
  * };
  * ```
  */
-type TranslationObject = Partial<Record<AppLanguage, TranslationData>>;
+type TranslationObject = Partial<Record<AppLanguage, TranslationData | string>>;
 
 /**
  * Store to hold the current application language.
