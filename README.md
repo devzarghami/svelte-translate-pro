@@ -42,17 +42,14 @@ console.log(AppLanguages.EN); // "en"
 
 ### 2. Load Translation Files
 
-Use the `loadTranslationData` function to dynamically load a translation file for a given language. The file should export the translation data as the default export.
+Use the `loadTranslation` function to dynamically load a translation data for a given language.
 
 ```typescript
-import { loadTranslationData, AppLanguages } from 'svelte-translate-pro';
+import { loadTranslation, AppLanguages } from 'svelte-translate-pro';
 
-// Load English translations from file
-await loadTranslationData(AppLanguages.FR, '/lib/translations/en.json');
-// Or
 import en from "/lib/translations/en.json"
 
-await loadTranslationData(AppLanguages.EN, en);
+await loadTranslation(AppLanguages.EN, en);
 
 ```
 
@@ -176,14 +173,6 @@ export enum AppLanguages {
     JP = "ja",
     AR = "ar"
 }
-```
-
-### `loadTranslationData(language: AppLanguage, filePath: string)`
-
-Dynamically loads a translation file for the specified language and updates the global translations store.
-
-```typescript
-await loadTranslationData(AppLanguages.FR, '/translations/fr.json');
 ```
 
 ### `getActiveLanguage(): AppLanguage`

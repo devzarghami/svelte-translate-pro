@@ -48,7 +48,7 @@ const DEFAULT_LANGUAGE: AppLanguage = AppLanguages.EN;
  * };
  * ```
  */
-interface TranslationData {
+export interface TranslationData {
     [key: string]: string | TranslationData;
 }
 
@@ -64,7 +64,7 @@ interface TranslationData {
  * };
  * ```
  */
-type TranslationObject = Partial<Record<AppLanguage, TranslationData | string>>;
+export type TranslationObject = Partial<Record<AppLanguage, TranslationData | string>>;
 
 /**
  * Store to hold the current application language.
@@ -89,40 +89,20 @@ const pageTranslationsStore: Writable<Record<AppLanguage, TranslationData>> = wr
  * Sets the current language to the language of the loaded translation.
  *
  * @param language - The target language to load (e.g., "en", "fa").
- * @param filePathOrData
+ * @param translationData
  *
  * @example
  * ```typescript
- * await loadTranslation(AppLanguages.FA, '/lib/translations/fa.json');
- * Or
  * import en from "/lib/translations/en.json"
  * await loadTranslation(AppLanguages.EN, en);
  * ```
  */
-export async function loadTranslation(language: AppLanguage, filePathOrData: string | TranslationData): Promise<void> {
-    try {
-        if (typeof filePathOrData === "string") {
-            const data = await import(filePathOrData);
-            globalTranslationsStore.update((currentData: any) => ({
-                ...currentData,
-                [language]: data.default || data,
-            }));
-            if (DEV) console.log(`Translation file loaded for language: ${language}`);
-        } else if (typeof filePathOrData === "object") {
-            globalTranslationsStore.update((currentData: any) => ({
-                ...currentData,
-                [language]: filePathOrData,
-            }));
-            if (DEV) console.log(`Translation data loaded for language: ${language}`);
-        }
-        activeLanguage.set(language);
-    } catch (error) {
-        if (typeof filePathOrData === "string") {
-            console.error(`Failed to load translation file for language "${language}" from "${filePathOrData}":`, error);
-        } else if (typeof filePathOrData === "object") {
-            console.error(`Failed to load translation data for language "${language}" data:${filePathOrData}:`, error);
-        }
-    }
+export function loadTranslation(language: AppLanguage, translationData: TranslationData): void {
+    globalTranslationsStore.update((currentData: any) => ({
+        ...currentData,
+        [language]: translationData,
+    }));
+    if (DEV) console.log(`Translation data loaded for language: ${language}`);
 }
 
 /**
